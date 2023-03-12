@@ -39,5 +39,38 @@ namespace ShrimplyShrimpWeb.Controllers
             }
             return View(shrimp);
         }
+        //GET
+        public IActionResult Edit(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var existingShrimp = _shrimplyShrimpDbContext.Shrimps.Find(id);
+            if (existingShrimp == null)
+            {
+                return NotFound();
+            }
+
+            return View(existingShrimp);
+        }
+        //POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Shrimp shrimp)
+        {
+            if (shrimp.Name == shrimp.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("ShrimpError", "Shrimp Name cannot match DisplayOrder");
+            }
+            if (ModelState.IsValid)
+            {
+                _shrimplyShrimpDbContext.Shrimps.Update(shrimp);
+                _shrimplyShrimpDbContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(shrimp);
+        }
     }
 }
