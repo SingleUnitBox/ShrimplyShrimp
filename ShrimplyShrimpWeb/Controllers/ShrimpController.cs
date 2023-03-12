@@ -35,6 +35,7 @@ namespace ShrimplyShrimpWeb.Controllers
             {
                 _shrimplyShrimpDbContext.Shrimps.Add(shrimp);
                 _shrimplyShrimpDbContext.SaveChanges();
+                TempData["success"] = "Shrimp created successfully";
                 return RedirectToAction("Index");
             }
             return View(shrimp);
@@ -68,9 +69,42 @@ namespace ShrimplyShrimpWeb.Controllers
             {
                 _shrimplyShrimpDbContext.Shrimps.Update(shrimp);
                 _shrimplyShrimpDbContext.SaveChanges();
+                TempData["success"] = "Shrimp edited successfully";
                 return RedirectToAction("Index");
             }
             return View(shrimp);
+        }
+        //GET
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var existingShrimp = _shrimplyShrimpDbContext.Shrimps.Find(id);
+            if (existingShrimp == null)
+            {
+                return NotFound();
+            }
+
+            return View(existingShrimp);
+        }
+        //POST
+        [HttpPost,ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeletePOST(int? id)
+        {
+            var shrimp = _shrimplyShrimpDbContext.Shrimps.Find(id);
+            if (shrimp == null)
+            {
+                return NotFound();
+            }
+
+            _shrimplyShrimpDbContext.Shrimps.Remove(shrimp);
+            _shrimplyShrimpDbContext.SaveChanges();
+            TempData["success"] = "Shrimp deleted successfully";
+            return RedirectToAction("Index");
         }
     }
 }
